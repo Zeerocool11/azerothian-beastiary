@@ -232,7 +232,7 @@ end
 
 local eventFrame = CreateFrame("Frame")
 
-eventFrame("PLAYER_LOGIN")
+eventFrame("PLAYER_ENTERING_WORLD")
 eventFrame("NAME_PLATE_UNIT_ADDED")
 eventFrame("PLAYER_TARGET_CHANGED")
 eventFrame("UPDATE_MOUSEOVER_UNIT")
