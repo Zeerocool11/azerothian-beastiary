@@ -3,6 +3,6 @@
 ## Notes: WoW Beastiary Addon
 ## Version: 1.0
 ## Author: Zeerocool11
+## SavedVariables: AzerothianBeastiaryDB
 
-SavedVariables: AzerothianBeastiaryDB
 AzerothianBeastiary.lua
