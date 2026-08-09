@@ -653,7 +653,7 @@ end
 -- ============================================================
 
 SLASH_AZEROTHIANBESTIARY1 = "/ab"
-SLASH_AZEROTHIANBESTIARY2 = "/bestiary"
+SLASH_AZEROTHIANBESTIARY2 = "/beastiary"
 
 
 SlashCmdList["AZEROTHIANBESTIARY"] =
