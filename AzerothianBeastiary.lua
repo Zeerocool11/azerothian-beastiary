@@ -45,7 +45,6 @@ local function GetNPCID(unit)
         return nil
     end
 
-
     local unitType, _, _, _, _, npcID = strsplit("-", guid)
 
     -- Normal NPCs use the Creature GUID type.
@@ -161,7 +160,7 @@ local function RecordNPC(unit, source)
         }
 
         print(
-            "|cff00ff00[ABC New]|r",
+            "|cffaa00ff [NEW]|r",
             npcName,
             "|cffaaaaaa(ID:",
             npcID .. ")|r"
