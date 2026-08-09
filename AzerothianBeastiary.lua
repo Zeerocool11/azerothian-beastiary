@@ -319,7 +319,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
         InitializeDatabase()
 
         print(
-            "|cff00bfff[Azeroth Bestiary Collector]|r Loaded."
+            "|cff00bfff[Azeroth Beastiary Collector]|r Loaded."
         )
 
         print(
