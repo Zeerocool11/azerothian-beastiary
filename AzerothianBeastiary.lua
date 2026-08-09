@@ -237,13 +237,13 @@ eventFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 eventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
-eventFrame:RegisterEvent("OnEvent", function(self, event, ...)
+eventFrame:SetScript("OnEvent", function(self, event, ...)
 
 -- ============================================
 -- ADDON INITIALIZATION
 -- ============================================
 
-if event == "PLAYER_LOGIN" then
+if event == "PLAYER_ENTERING_WORLD" then
 
     InitializeDatabase()
 
