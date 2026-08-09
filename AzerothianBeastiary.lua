@@ -40,6 +40,12 @@ local function GetNPCID(unit)
         return nil
     end
 
+    if issecretvalue and issecretvalue(guid) then
+        DebugPrint("GUID is secret for:", unit)
+        return nil
+    end
+
+
     local unitType, _, _, _, _, npcID = strsplit("-", guid)
 
     -- Normal NPCs use the Creature GUID type.
