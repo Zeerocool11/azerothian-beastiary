@@ -237,7 +237,7 @@ eventFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 eventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
-eventFrame("OnEvent", function(self, event, ...)
+eventFrame:RegisterEvent("OnEvent", function(self, event, ...)
 
 -- ============================================
 -- ADDON INITIALIZATION
