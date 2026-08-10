@@ -151,6 +151,10 @@ local function RecordNPC(unit, source)
     local currentTime = time()
     local location = GetLocationData()
 
+    if location.inInstance then
+        return false
+    end
+
     if not AzerothianBeastiaryDB.npcs[npcID] then
 
     AzerothianBeastiaryDB.npcs[npcID] = {
