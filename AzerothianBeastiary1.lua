@@ -4,7 +4,7 @@ local DB_VERSION = "1.0.0"
 AzerothianBeastiaryDB = AzerothianBeastiaryDB or {}
 
 local function LoadDatabase()
-    AzerothianBeastiaryDB.npcs = AzerothianBeastiary.npcs or {}
+    AzerothianBeastiaryDB.npcs = AzerothianBeastiaryDB.npcs or {}
     AzerothianBeastiaryDB.version = "DB_VERSION"
 end
 
@@ -52,12 +52,59 @@ local function IsValidEnemy(unit)
     return true
 end
 
+local function GetParentZone(rawMapID)
+
+    if not rawMapID then
+        return nil, nil
+    end
+
+    local currentMapID = rawMapID
+
+    while currentMapID do
+
+        local mapInfo = C_Map.GetMapInfo(currentMapID)
+
+        if not mapInfo then
+            break
+        end
+
+        -- We reached an actual zone.
+        if mapInfo.mapType == Enum.UIMapType.Zone then
+            return mapInfo.mapID, mapInfo.name
+        end
+
+        -- No parent means we've reached the top.
+        if not mapInfo.parentMapID or mapInfo.parentMapID == 0 then
+            return mapInfo.mapID, mapInfo.name
+        end
+
+        currentMapID = mapInfo.parentMapID
+    end
+
+    -- Fallback: just use the original map.
+    local mapInfo = C_Map.GetMapInfo(rawMapID)
+
+    if mapInfo then
+        return rawMapID, mapInfo.name
+    end
+
+    return rawMapID, nil
+end
+
+
+-- ============================================================
+-- LOCATION DATA
+-- ============================================================
+
 local function GetLocationData()
+
     local rawMapID = C_Map.GetBestMapForUnit("player")
 
-    local zoneMapID, zoneName = GetParentZone(rawMapID)
+    local zoneMapID, zoneName =
+        GetParentZone(rawMapID)
 
-    local inInstance, instanceType = IsInInstance()
+    local inInstance, instanceType =
+        IsInInstance()
 
     local instanceName,
         returnedInstanceType,
@@ -67,7 +114,7 @@ local function GetLocationData()
         dynamicDifficulty,
         isDynamic,
         instanceID =
-    GetInstanceInfo()
+        GetInstanceInfo()
 
     return {
         mapID = zoneMapID,
@@ -76,9 +123,13 @@ local function GetLocationData()
 
         inInstance = inInstance,
         instanceType = instanceType,
+
+        instanceName = instanceName,
+
         difficultyID = difficultyID,
         difficultyName = difficultyName,
-        maxPlayers = maxPlayers
+        maxPlayers = maxPlayers,
+        instanceID = instanceID
     }
 end
 
@@ -101,59 +152,70 @@ local function RecordNPC(unit, source)
     local location = GetLocationData()
 
     if not AzerothianBeastiaryDB.npcs[npcID] then
-        AzerothianBeastiaryDB.npcs[npcID] = {
-            id = npcID,
-            name = npcName,
 
-            firstSeen = currentTime,
-            lastSeen = currentTime,
-            seenCount = 1,
+    AzerothianBeastiaryDB.npcs[npcID] = {
+        id = npcID,
+        name = npcName,
 
-            locations = {}
-        }
+        firstSeen = currentTime,
+        lastSeen = currentTime,
+        seenCount = 1,
 
-        print(
-            "|cffaa00ff [NEW NPC]|r",
-            npcName,
-            "|cffaaaaaa(ID:",
-            npcID .. ")|r"
-        )
+        locations = {}
+    }
 
-    else
-        localnpcData = AzerothianBeastiaryDB.npcs[npcID]
-        npcData.lastSeen = currentTime
-        npcData.seenCount = (npcData.seenCount or 0) + 1
-    end
+    print(
+        "|cffaa00ff[NEW NPC]|r",
+        npcName,
+        "|cffaaaaaa(ID:",
+        npcID .. ")|r"
+    )
+
+else
 
     local npcData = AzerothianBeastiaryDB.npcs[npcID]
-    local locationKey
-    if location.inInstance then
-        locationKey = 
+
+    npcData.lastSeen = currentTime
+    npcData.seenCount = (npcData.seenCount or 0) + 1
+end
+
+
+-- Important: define npcData again here so it exists
+-- outside of the if/else block.
+local npcData = AzerothianBeastiaryDB.npcs[npcID]
+
+
+local locationKey
+
+if location.inInstance then
+
+    locationKey =
         "INSTANCE:" ..
         tostring(location.mapID or "UNKNOWN") ..
         ":" ..
         tostring(location.instanceName or "UNKNOWN")
-    else
-        locationKey = 
-            "MAP:" ..
-            tostring(location.mapID or "UNKNOWN")
-    end
 
-    if not npcData.locations[locationKey] then
-        npcData.locations[locationKey] = {
-            mapID = location.mapID,
-            mapName = location.mapName,
+else
 
-            inInstance = location.inInstance,
-            instanceType = location.instanceType,
-            instanceName = location.instanceName,
+    locationKey =
+        "MAP:" ..
+        tostring(location.mapID or "UNKNOWN")
+end
 
-            firstSeen = currentTime
-        }
-    end
 
-    return true
+if not npcData.locations[locationKey] then
 
+    npcData.locations[locationKey] = {
+        mapID = location.mapID,
+        mapName = location.mapName,
+
+        inInstance = location.inInstance,
+        instanceType = location.instanceType,
+        instanceName = location.instanceName,
+
+        firstSeen = currentTime
+    }
+end
 end
 
 local function scanUnit(unit)
@@ -175,7 +237,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         LoadDatabase()
         print(
-            "|ccffaa00ff[Azerothian Beastiary]|r Loaded."
+            "|ccffaa00f[Azerothian Beastiary]|r Loaded."
         )
 
         print(
@@ -215,11 +277,11 @@ local function ShowStats()
         GetStatistics()
     
     print(
-        "|ccffaa00ff=== AZEROTHIAN BEASTIARY STATISTICS ===|r"
+        "|cffaa00ff AZEROTHIAN BEASTIARY STATISTICS|r"
     )
 
     print(
-        "|cfffffffffUnique Enemies:|r",
+        "|cffffffffUnique Enemies:|r",
         "|cff00ff00" .. totalNPCS .. "|r"
     )
 
@@ -229,13 +291,13 @@ local function ShowStats()
     )
 
     print(
-        "|ccffaa00ff=======================================|r"
+        "|cffaa00ff======================================|r"
     )
 end
 
 local function ShowHelp()
     print(
-        "|ccffaa00ff=== Azerothian Beastiary Commands ===|r"
+        "|cffaa00ff Azerothian Beastiary Commands |r"
     )
 
     print(
@@ -247,11 +309,12 @@ local function ShowHelp()
     )
 
     print(
-        "|cff00bfff===============================|r"
+        "|cffaa00ff==============================|r"
     )
 end
 
-SLASH_AZEROTHIANBEASTIARY = "/ab"
+SLASH_AZEROTHIANBEASTIARY1 = "/ab"
+SLASH_AZEROTHIANBEASTIARY2 = "beastiary"
 
 SlashCmdList["AZEROTHIANBEASTIARY"] =
 function(message)
